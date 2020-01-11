@@ -10,10 +10,10 @@
 #such as json is to be used
 
 
-mqttServer="192.168.1.10"
+mqttServer="localhost"
 mqttPort="1883"
 
-channelSubs="$SYS/#"
+channelSubs="test"
 #use below as alternative to subscribe to all channels
 #channelSubs="#"
 
@@ -40,14 +40,22 @@ def on_message(client, userdata, msg):
 #our implementation uses this to separate numeric(float) from string data
 
     try:
-	float(msg.payload)
-	es.index(index="my-index", doc_type="numeric", body={"topic" : msg.topic, "dataFloat" : float(msg.payload), "timestamp": datetime.utcnow()})
+        float(msg.payload)
+        es.index(index="mqtt-index", doc_type="_doc", body={"topic" : msg.topic, "dataFloat" : float(msg.payload), "timestamp": datetime.utcnow()})
     	
     except:
-	es.index(index="my-index", doc_type="string", body={"topic" : msg.topic, "dataString" : msg.payload, "timestamp": datetime.utcnow()})
+        pass
+        #es.index(index="my-index", doc_type="string", body={"topic" : msg.topic, "dataString" : msg.payload, "timestamp": datetime.utcnow()})
     
 # by default we connect to elasticSearch on localhost:9200
-es = Elasticsearch()
+
+es = Elasticsearch(
+    ['192.168.0.100'],
+    http_auth=('user', 'secret'),
+    scheme="https",
+    port=9200,
+)
+ 
 
 client = mqtt.Client()
 client.on_connect = on_connect
@@ -59,9 +67,5 @@ client.connect(mqttServer,mqttPort, 60)
 # Other loop*() functions are available that give a threaded interface and a
 # manual interface.
 client.loop_forever()
-
-
-
-
 
 
