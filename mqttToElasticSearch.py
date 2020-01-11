@@ -34,12 +34,13 @@ def on_message(client, userdata, msg):
     print(msg.topic+" "+str(msg.payload))
  
 # this is the syntax to follow for the elasticSearch update taken from documentation
-#    es.index(index="my-index", doc_type="test-type", id=42, body={"any": +str(msg.payload, "timestamp": datetime.now()})
+#    es.index(index="mqtt-index", doc_type="_doc", id=42, body={"any": +str(msg.payload, "timestamp": datetime.now()})
 #    {u'_id': u'42', u'_index': u'my-index', u'_type': u'test-type', u'_version': 1, u'ok': True}
 
 #our implementation uses this to separate numeric(float) from string data
 
     try:
+        print "Recived: " + msg.payload
         float(msg.payload)
         es.index(index="mqtt-index", doc_type="_doc", body={"topic" : msg.topic, "dataFloat" : float(msg.payload), "timestamp": datetime.utcnow()})
     	
@@ -67,5 +68,3 @@ client.connect(mqttServer,mqttPort, 60)
 # Other loop*() functions are available that give a threaded interface and a
 # manual interface.
 client.loop_forever()
-
-
