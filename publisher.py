@@ -8,4 +8,4 @@ print ("argv[0]: %s" % (sys.argv[1]))
 
 client = mqtt.Client()
 client.connect("localhost",1883,60)
-client.publish("test", argv[1]);
+client.publish("test", sys.argv[1]);
